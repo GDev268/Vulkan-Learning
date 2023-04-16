@@ -7,3 +7,6 @@ DEFINES = -DNDEBUG
 
 all: ${EXSOURCE}
 	${COMPILER} ${DEFINES} ${INCLUDE} ${SOURCE} ${CFLAGS} ${CLIBS} -o main; 
+
+windows: ${EXSOURCE}
+	${COMPILER} ${DEFINES} ${INCLUDE} ${SOURCE} ${CFLAGS} ${CLIBS} -o main.exe; 
