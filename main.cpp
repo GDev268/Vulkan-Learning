@@ -24,9 +24,10 @@ const bool enableValidationLayers = false;
 
 typedef struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
 
     bool isComplete(){
-        return graphicsFamily.has_value();
+        return graphicsFamily.has_value() && presentFamily.has_value();
     }
 };
 
@@ -71,6 +72,7 @@ private:
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device;
     VkQueue graphicsQueue;
+    VkSurfaceKHR surface;
     
     void initWindow()
     {
@@ -85,9 +87,16 @@ private:
     {
         createInstance();
         setupDebugMessenger();
+        createSurface();
         pickPhysicalDevice();
         createLogicalDevice();
     };
+
+    void createSurface(){
+        if(glfwCreateWindowSurface(instance,window,nullptr,&surface) != VK_SUCCESS){
+            throw std::runtime_error("Failed to create window surface!");
+        }
+    }
 
     void createLogicalDevice(){
         QueueFamilyIndices indices = findAllQueueFamilies(physicalDevice);
@@ -176,11 +185,18 @@ private:
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device,&queueFamilyCount,queueFamilies.data());
 
+        
         int i = 0;
         for(const auto& queueFamily : queueFamilies){
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(device,i,surface,&presentSupport);
+            
             if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT){
                 indices.graphicsFamily = i;
             }
+
+            if(presentSupport)
+                indices.presentFamily = i;
 
             if(indices.isComplete()){
                 break;
@@ -214,6 +230,8 @@ private:
         {
             vkDestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
         }
+
+        vkDestroySurfaceKHR(instance,surface,nullptr);
 
         vkDestroyInstance(instance, nullptr);
 
