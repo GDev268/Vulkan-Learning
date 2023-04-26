@@ -1,4 +1,4 @@
-#pragma oncce
+#pragma once
 
 #include "Window.hpp"
 #include "Pipeline.hpp"
@@ -17,6 +17,6 @@ namespace Tutorial
     private:
         Tutorial::Window window = Tutorial::Window("Hello Vulkan!", WIDTH, HEIGHT);
         Tutorial::Device device = Tutorial::Device(window);
-        Tutorial::Pipeline pipeline = Tutorial::Pipeline(device,"shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv",Tutorial::Pipeline::defaultPipelineInfo(WIDTH,HEIGHT));
+        Tutorial::Pipeline pipeline = Tutorial::Pipeline(device,"shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv",Tutorial::Pipeline::defaultPipelineConfigInfo(WIDTH,HEIGHT));
     };
 }

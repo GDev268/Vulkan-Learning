@@ -1,8 +1,8 @@
 #include "App.hpp"
 
-void Tutorial::FirstApp::run()
-{
-    while(!glfwWindowShouldClose(window.window)){
-        glfwPollEvents();
-    }
-}
+
+void Tutorial::FirstApp::run() {
+  while (!window.shouldClose()) {
+    glfwPollEvents();
+  }
+}  // namespace lve

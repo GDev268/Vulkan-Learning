@@ -1,6 +1,6 @@
 COMPILER = g++
-CFLAGS = -O3 -Wall -fPIC -g -w
-CLIBS = -lvulkan -lGL -lGLU -lglfw -lm -lXrandr -lXi -lX11 -lXxf86vm -lpthread -ldl -lXinerama -lXcursor
+CFLAGS = -std=c++17 -O3 -Wall -fPIC -g -w
+CLIBS = -lvulkan -lglfw
 SOURCE = *.cpp *.hpp
 DEFINES = -DNDEBUG
 
