@@ -3,6 +3,10 @@
 #include "Window.hpp"
 #include "Pipeline.hpp"
 #include "Device.hpp"
+#include "Swapchain.hpp"
+
+#include <memory>
+#include <vector>
 
 namespace Tutorial
 {
@@ -10,13 +14,27 @@ namespace Tutorial
     {
     public:
         static constexpr int WIDTH = 800;
-        static constexpr int HEIGHT = 800;
+        static constexpr int HEIGHT = 640;
 
         void run();
 
+        FirstApp();
+        ~FirstApp();
+
+        FirstApp(const FirstApp &) = delete;
+        FirstApp &operator=(const FirstApp &) = delete;
+
     private:
+        void createPipelineLayout();
+        void createPipeline();
+        void createCommandBuffers();
+        void drawFrame();
+
         Tutorial::Window window = Tutorial::Window("Hello Vulkan!", WIDTH, HEIGHT);
         Tutorial::Device device = Tutorial::Device(window);
-        Tutorial::Pipeline pipeline = Tutorial::Pipeline(device,"shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv",Tutorial::Pipeline::defaultPipelineConfigInfo(WIDTH,HEIGHT));
+        Tutorial::Swapchain swapchain = Tutorial::Swapchain(device, window.getExtent());
+        std::unique_ptr<Pipeline> pipeline;
+        VkPipelineLayout pipelineLayout;
+        std::vector<VkCommandBuffer> commandBuffers;
     };
 }

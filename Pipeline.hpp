@@ -11,7 +11,6 @@ namespace Tutorial
     {
         VkViewport viewport;
         VkRect2D scissor;
-        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;
@@ -38,6 +37,7 @@ namespace Tutorial
 
         static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
 
+        void bind(VkCommandBuffer commandBuffer);
     private:
         static std::vector<char> readFile(const std::string &filepath);
 
