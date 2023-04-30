@@ -4,29 +4,28 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+namespace Tutorial {
 
-namespace Tutorial{
-    class Window{
-    public:
-        Window(const char* name,int width,int height);
+class Window {
+ public:
+  Window(int w, int h, std::string name);
+  ~Window();
 
-        Window(const Window &) = delete;
-        Window &operator=(const Window &) = delete;
+  Window(const Window &) = delete;
+  Window &operator=(const Window &) = delete;
 
-        bool shouldClose() {
-            return glfwWindowShouldClose(window);
-        }
+  bool shouldClose() { return glfwWindowShouldClose(window); }
+  VkExtent2D getExtent() { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
 
-        VkExtent2D getExtent() {
-            return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
-        }
+  void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
-        void createWindowSurface(VkInstance instance,VkSurfaceKHR* surface);
+ private:
+  void initWindow();
 
-        ~Window();
+  const int width;
+  const int height;
 
-        GLFWwindow* window;
-
-        const int width,height;
-    };
-}
+  std::string windowName;
+  GLFWwindow *window;
+};
+}  // namespace lve

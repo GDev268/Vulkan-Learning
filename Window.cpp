@@ -1,24 +1,30 @@
 #include "Window.hpp"
 
+// std
 #include <stdexcept>
 
-Tutorial::Window::Window(const char *name, int width, int height) : width{width}, height{height}
-{
-    glfwInit();
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+namespace Tutorial {
 
-    window = glfwCreateWindow(width, height, name, nullptr, nullptr);
-};
-
-void Tutorial::Window::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
-{
-    if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
-    {
-        throw std::runtime_error("Couldn't create window surface");
-    }
+Window::Window(int w, int h, std::string name) : width{w}, height{h}, windowName{name} {
+  initWindow();
 }
 
-Tutorial::Window::~Window(){
+Window::~Window() {
+  glfwDestroyWindow(window);
+  glfwTerminate();
+}
 
-};
+void Window::initWindow() {
+  glfwInit();
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+  window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+}
+
+void Window::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
+  if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
+    throw std::runtime_error("failed to craete window surface");
+  }
+}
+}  // namespace lve

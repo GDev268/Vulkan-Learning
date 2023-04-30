@@ -25,12 +25,12 @@ struct QueueFamilyIndices {
 class Device {
  public:
 #ifdef NDEBUG
-  const bool enableValidationLayers = true;
-#else
   const bool enableValidationLayers = false;
+#else
+  const bool enableValidationLayers = true;
 #endif
 
-  Device(Tutorial::Window &window);
+  Device(Window &window);
   ~Device();
 
   // Not copyable or movable
@@ -93,7 +93,7 @@ class Device {
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-  Tutorial::Window &window;
+  Window &window;
   VkCommandPool commandPool;
 
   VkDevice device_;

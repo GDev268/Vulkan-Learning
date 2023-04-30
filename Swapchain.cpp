@@ -71,8 +71,7 @@ VkResult Swapchain::acquireNextImage(uint32_t *imageIndex) {
   return result;
 }
 
-VkResult Swapchain::submitCommandBuffers(
-    const VkCommandBuffer *buffers, uint32_t *imageIndex) {
+VkResult Swapchain::submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex) {
   if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
     vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
   }
@@ -237,15 +236,13 @@ void Swapchain::createRenderPass() {
   subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
   VkSubpassDependency dependency = {};
+
+  dependency.dstSubpass = 0;
+  dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+  dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
   dependency.srcAccessMask = 0;
-  dependency.srcStageMask =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-  dependency.dstSubpass = 0;
-  dependency.dstStageMask =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-  dependency.dstAccessMask =
-      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+  dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
   std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
   VkRenderPassCreateInfo renderPassInfo = {};
@@ -362,7 +359,7 @@ void Swapchain::createSyncObjects() {
 VkSurfaceFormatKHR Swapchain::chooseSwapSurfaceFormat(
     const std::vector<VkSurfaceFormatKHR> &availableFormats) {
   for (const auto &availableFormat : availableFormats) {
-    if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+    if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
         availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
       return availableFormat;
     }
@@ -414,4 +411,4 @@ VkFormat Swapchain::findDepthFormat() {
       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
-}  // namespace Tutorial
+}  // namespace lve

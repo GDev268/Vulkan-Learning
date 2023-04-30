@@ -6,8 +6,7 @@
 #include <set>
 #include <unordered_set>
 
-namespace Tutorial
-{
+namespace Tutorial {
 
 // local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -15,7 +14,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
     void *pUserData) {
-  std::cerr << "validation layer: " << pCallbackData->pMessage << "\n\n";
+  std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
   return VK_FALSE;
 }
@@ -131,7 +130,7 @@ void Device::pickPhysicalDevice() {
   }
 
   vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-  std::cout << "physical device: " << properties.deviceName << "\n\n";
+  std::cout << "physical device: " << properties.deviceName << std::endl;
 }
 
 void Device::createLogicalDevice() {
@@ -436,7 +435,6 @@ void Device::createBuffer(
 }
 
 VkCommandBuffer Device::beginSingleTimeCommands() {
-
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -533,4 +531,4 @@ void Device::createImageWithInfo(
   }
 }
 
-}
+}  // namespace lve

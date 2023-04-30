@@ -1,43 +1,42 @@
 #pragma once
 
-#include "Window.hpp"
-#include "Pipeline.hpp"
 #include "Device.hpp"
-#include "Swapchain.hpp"
 #include "Model.hpp"
+#include "Pipeline.hpp"
+#include "Swapchain.hpp"
+#include "Window.hpp"
 
+// std
 #include <memory>
 #include <vector>
 
-namespace Tutorial
-{
-    class FirstApp
-    {
-    public:
-        static constexpr int WIDTH = 800;
-        static constexpr int HEIGHT = 640;
+namespace Tutorial {
+class FirstApp {
+ public:
+  static constexpr int WIDTH = 800;
+  static constexpr int HEIGHT = 600;
 
-        void run();
+  FirstApp();
+  ~FirstApp();
 
-        FirstApp();
-        ~FirstApp();
+  FirstApp(const FirstApp &) = delete;
+  FirstApp &operator=(const FirstApp &) = delete;
 
-        FirstApp(const FirstApp &) = delete;
-        FirstApp &operator=(const FirstApp &) = delete;
+  void run();
 
-    private:
-        void loadModels(); 
-        void createPipelineLayout();
-        void createPipeline();
-        void createCommandBuffers();
-        void drawFrame();
+ private:
+  void loadModels();
+  void createPipelineLayout();
+  void createPipeline();
+  void createCommandBuffers();
+  void drawFrame();
 
-        Tutorial::Window window = Tutorial::Window("Hello Vulkan!", WIDTH, HEIGHT);
-        Tutorial::Device device = Tutorial::Device(window);
-        Tutorial::Swapchain swapchain = Tutorial::Swapchain(device, window.getExtent());
-        std::unique_ptr<Pipeline> pipeline;
-        VkPipelineLayout pipelineLayout;
-        std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<Model> model;
-    };
-}
+  Window window{WIDTH, HEIGHT, "Hello Vulkan!"};
+  Device device{window};
+  Swapchain swapchain{device, window.getExtent()};
+  std::unique_ptr<Pipeline> pipeline;
+  VkPipelineLayout pipelineLayout;
+  std::vector<VkCommandBuffer> commandBuffers;
+  std::unique_ptr<Model> model;
+};
+}  // namespace lve

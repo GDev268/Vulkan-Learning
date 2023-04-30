@@ -1,67 +1,66 @@
 #include "App.hpp"
 
-#include <stdexcept>
+// std
 #include <array>
+#include <stdexcept>
 
-void Tutorial::FirstApp::run()
-{
-  while (!window.shouldClose())
-  {
-    glfwPollEvents();
-    drawFrame();
-  }
+namespace Tutorial {
 
-  vkDeviceWaitIdle(device.device());
-} // namespace lve
-
-Tutorial::FirstApp::FirstApp()
-{
+FirstApp::FirstApp() {
   loadModels();
   createPipelineLayout();
   createPipeline();
   createCommandBuffers();
 }
 
-Tutorial::FirstApp::~FirstApp()
-{
-  vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+FirstApp::~FirstApp() { vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr); }
+
+void FirstApp::run() {
+  while (!window.shouldClose()) {
+    glfwPollEvents();
+    drawFrame();
+  }
+
+  vkDeviceWaitIdle(device.device());
 }
 
-void Tutorial::FirstApp::loadModels()
-{ 
+void FirstApp::loadModels() {
   std::vector<Model::Vertex> vertices{
-    {{0.0f, -0.5f}}, 
-    {{0.5f, 0.5f}}, 
-    {{-0.5f, 0.5f}}
-  };
-  model = std::make_unique<Model>(device,vertices);
+      {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+      {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+      {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+  model = std::make_unique<Model>(device, vertices);
 }
 
-void Tutorial::FirstApp::createPipelineLayout()
-{
+void FirstApp::createPipelineLayout() {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = 0;
   pipelineLayoutInfo.pSetLayouts = nullptr;
   pipelineLayoutInfo.pushConstantRangeCount = 0;
   pipelineLayoutInfo.pPushConstantRanges = nullptr;
-
-  if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-  {
-    throw std::runtime_error("Failed to create pipeline info!");
+  if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("failed to create pipeline layout!");
   }
 }
 
-void Tutorial::FirstApp::createPipeline()
-{
-  auto pipelineConfig = Pipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT);
+void FirstApp::createPipeline() {
+  PipelineConfigInfo pipelineConfig{};
+  Pipeline::defaultPipelineConfigInfo(
+      pipelineConfig,
+      swapchain.width(),
+      swapchain.height());
   pipelineConfig.renderPass = swapchain.getRenderPass();
   pipelineConfig.pipelineLayout = pipelineLayout;
-  pipeline = std::make_unique<Pipeline>(device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", pipelineConfig);
+  pipeline = std::make_unique<Pipeline>(
+      device,
+      "shaders/simple_shader.vert.spv",
+      "shaders/simple_shader.frag.spv",
+      pipelineConfig);
 }
 
-void Tutorial::FirstApp::createCommandBuffers()
-{
+void FirstApp::createCommandBuffers() {
   commandBuffers.resize(swapchain.imageCount());
 
   VkCommandBufferAllocateInfo allocInfo{};
@@ -70,25 +69,24 @@ void Tutorial::FirstApp::createCommandBuffers()
   allocInfo.commandPool = device.getCommandPool();
   allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-  if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
-  {
-    throw std::runtime_error("couldn't allocate command buffers");
+  if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) !=
+      VK_SUCCESS) {
+    throw std::runtime_error("failed to allocate command buffers!");
   }
 
-  for (int i = 0; i < commandBuffers.size(); i++)
-  {
-    VkCommandBufferBeginInfo beingInfo{};
-    beingInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  for (int i = 0; i < commandBuffers.size(); i++) {
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(commandBuffers[i], &beingInfo) != VK_SUCCESS)
-    {
-      throw std::runtime_error("couldn't begin command buffer");
+    if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
+      throw std::runtime_error("failed to begin recording command buffer!");
     }
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = swapchain.getRenderPass();
     renderPassInfo.framebuffer = swapchain.getFrameBuffer(i);
+
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapchain.getSwapChainExtent();
 
@@ -104,25 +102,23 @@ void Tutorial::FirstApp::createCommandBuffers()
     model->bind(commandBuffers[i]);
     model->draw(commandBuffers[i]);
 
-
     vkCmdEndRenderPass(commandBuffers[i]);
-    if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
-    {
-      throw std::runtime_error("failed to record command buffer");
+    if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
+      throw std::runtime_error("failed to record command buffer!");
     }
   }
 }
-
-void Tutorial::FirstApp::drawFrame()
-{
+void FirstApp::drawFrame() {
   uint32_t imageIndex;
   auto result = swapchain.acquireNextImage(&imageIndex);
-  if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
-    throw std::runtime_error("failed to acquire swap chain image");
+  if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+    throw std::runtime_error("failed to acquire swap chain image!");
   }
 
-  result = swapchain.submitCommandBuffers(&commandBuffers[imageIndex],&imageIndex);
-  if(result != VK_SUCCESS){
+  result = swapchain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+  if (result != VK_SUCCESS) {
     throw std::runtime_error("failed to present swap chain image!");
   }
 }
+
+}  // namespace lve

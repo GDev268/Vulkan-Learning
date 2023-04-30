@@ -1,19 +1,20 @@
+
 #include "App.hpp"
 
-#include <stdlib.h>
+// std
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
-int main(){
-    Tutorial::FirstApp app = Tutorial::FirstApp();
+int main() {
+  Tutorial::FirstApp app{};
 
-    try{
-        app.run();
-    }
-    catch(const std::exception e){
-        std::cerr << e.what() << std::endl;
-        return 1;
-    }
+  try {
+    app.run();
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
+    return EXIT_FAILURE;
+  }
 
-    return 0;
+  return EXIT_SUCCESS;
 }
