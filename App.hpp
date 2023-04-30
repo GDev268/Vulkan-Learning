@@ -30,13 +30,15 @@ class FirstApp {
   void createPipeline();
   void createCommandBuffers();
   void drawFrame();
+  void recreateSwapChain();
+  void recordCommandBuffer(int imageIndex);
 
   Window window{WIDTH, HEIGHT, "Hello Vulkan!"};
   Device device{window};
-  Swapchain swapchain{device, window.getExtent()};
+  std::unique_ptr<Swapchain> swapchain;
+  std::unique_ptr<Model> model;
   std::unique_ptr<Pipeline> pipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;
-  std::unique_ptr<Model> model;
 };
 }  // namespace lve

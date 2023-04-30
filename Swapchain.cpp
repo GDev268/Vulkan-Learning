@@ -13,6 +13,19 @@ namespace Tutorial {
 
 Swapchain::Swapchain(Device &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent} {
+  init();
+}
+
+Swapchain::Swapchain(
+    Device &deviceRef, VkExtent2D extent, std::shared_ptr<Swapchain> previous)
+    : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+  init();
+
+  // clean up old swap chain since it's no longer needed
+  oldSwapChain = nullptr;
+}
+
+void Swapchain::init() {
   createSwapChain();
   createImageViews();
   createRenderPass();
@@ -161,7 +174,7 @@ void Swapchain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
   if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
     throw std::runtime_error("failed to create swap chain!");

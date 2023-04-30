@@ -36,7 +36,7 @@ class Pipeline {
   ~Pipeline();
 
   Pipeline(const Pipeline&) = delete;
-  void operator=(const Pipeline&) = delete;
+  Pipeline& operator=(const Pipeline&) = delete;
 
   void bind(VkCommandBuffer commandBuffer);
 
