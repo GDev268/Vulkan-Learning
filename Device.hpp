@@ -83,6 +83,7 @@ namespace Tutorial
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createCommandPool();
+    void getVulkanVersion();
 
     // helper functions
     bool isDeviceSuitable(VkPhysicalDevice device);
@@ -107,6 +108,9 @@ namespace Tutorial
 
     const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+    uint32_t gameVersion;
+    int numDevices;
   };
 
 } // namespace lve

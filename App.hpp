@@ -2,6 +2,7 @@
 
 #include "Device.hpp"
 #include "Model.hpp"
+#include "GameObject.hpp"
 #include "Pipeline.hpp"
 #include "Swapchain.hpp"
 #include "Window.hpp"
@@ -25,20 +26,22 @@ class FirstApp {
   void run();
 
  private:
-  void loadModels();
+  void loadGameObjects();
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
   void drawFrame();
   void recreateSwapChain();
   void recordCommandBuffer(int imageIndex);
+  void renderGameObjects(VkCommandBuffer commandBuffer);
 
   Window window{WIDTH, HEIGHT, "Hello Vulkan!"};
   Device device{window};
   std::unique_ptr<Swapchain> swapchain;
-  std::unique_ptr<Model> model;
   std::unique_ptr<Pipeline> pipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;
+  std::vector<GameObject> gameObjects;
+
 };
 }  // namespace lve
