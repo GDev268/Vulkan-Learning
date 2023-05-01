@@ -238,12 +238,10 @@ namespace Tutorial
 
     std::cout << "\n======= VULKAN INFO =======\n\n";
 
-    std::cout << "Api Version: " << VK_VERSION_MAJOR(gameVersion) << "." << VK_VERSION_MINOR(gameVersion) << "." << VK_VERSION_PATCH(gameVersion) << std::endl;
+    std::cout << "API Version: " << VK_VERSION_MAJOR(gameVersion) << "." << VK_VERSION_MINOR(gameVersion) << "." << VK_VERSION_PATCH(gameVersion) << std::endl;
 
     uint32_t driverVersion = properties.driverVersion;
     std::cout << "Driver Version: " << VK_VERSION_MAJOR(driverVersion) << "." << VK_VERSION_MINOR(driverVersion) << "." << VK_VERSION_PATCH(driverVersion) << std::endl;
-
-    std::cout << "Vendor ID: " << properties.vendorID << std::endl;
 
     std::cout << "Device count: " << numDevices << std::endl;
 
@@ -660,4 +658,4 @@ namespace Tutorial
     }
   }
 
-} // namespace lve
+} 
