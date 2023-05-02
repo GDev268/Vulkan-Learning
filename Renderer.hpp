@@ -19,6 +19,7 @@ class Renderer {
   Renderer &operator=(const Renderer &) = delete;
 
   VkRenderPass getSwapChainRenderPass() const { return swapchain->getRenderPass(); }
+  float getAspectRatio() const { return swapchain->extentAspectRatio(); }
   bool isFrameInProgress() const { return isFrameStarted; }
 
   VkCommandBuffer getCurrentCommandBuffer() const {
