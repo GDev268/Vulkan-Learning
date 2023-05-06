@@ -17,7 +17,7 @@ namespace Tutorial
   struct SimplePushConstantData
   {
     glm::mat4 transform{1.f};
-    alignas(16) glm::vec3 color{};
+    glm::mat4 modelMatrix{1.f};
   };
 
   RenderSystem::RenderSystem(Device &device, VkRenderPass renderPass)
@@ -76,12 +76,13 @@ namespace Tutorial
 
     for (auto &obj : gameObjects)
     {
-      obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
-      obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.005f, glm::two_pi<float>());
+      obj.transform.rotation.y = glm::mod(obj.transform.rotation.y, glm::two_pi<float>());
+      obj.transform.rotation.x = glm::mod(obj.transform.rotation.x, glm::two_pi<float>());
 
       SimplePushConstantData push{};
-      push.color = obj.color;
-      push.transform = projectionView * obj.transform.mat4();
+      auto modelMatrix = obj.transform.mat4();
+      push.transform = projectionView * modelMatrix;
+      push.modelMatrix = modelMatrix;
 
       vkCmdPushConstants(
           commandBuffer,
