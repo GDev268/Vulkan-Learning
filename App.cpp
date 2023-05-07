@@ -26,6 +26,8 @@ namespace Tutorial
 
   void FirstApp::run()
   {
+    float time;
+
     RenderSystem renderSystem{device, renderer.getSwapChainRenderPass()};
     Camera camera{};
     GameObject viewerObject = GameObject::createGameObject();
@@ -42,6 +44,7 @@ namespace Tutorial
       auto newTime = std::chrono::high_resolution_clock::now();
       float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
       currentTime = newTime;
+      time += 0.01f;
 
       cameraController.moveInPlaneXZ(window.getGLFWwindow(), deltaTime, viewerObject);
       camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
@@ -57,9 +60,27 @@ namespace Tutorial
         renderer.endSwapChainRenderPass(commandBuffer);
         renderer.endFrame();
       }
-      gameObjects[0].transform.rotation.y += deltaTime * 2;
-      gameObjects[0].transform.rotation.x += deltaTime * 2;
-      gameObjects[0].transform.rotation.z += deltaTime * 2;
+      gameObjects[0].transform.translation.x += deltaTime * 2;
+      if(gameObjects[0].transform.translation.x >= 20){
+        gameObjects[0].transform.translation.x = 0;
+      }
+
+      gameObjects[1].transform.rotation.y += deltaTime * 2;
+
+      gameObjects[1].transform.translation.x += sin(time) / 100;
+      gameObjects[1].transform.translation.z += cos(time) / 100;
+
+      gameObjects[2].transform.translation.y -= deltaTime * 2;
+      if(gameObjects[2].transform.translation.y <= -10){
+        gameObjects[2].transform.translation.y = 10;
+      }
+
+      gameObjects[2].transform.rotation.y += deltaTime * 2;
+      gameObjects[2].transform.rotation.x += deltaTime * 2;
+
+      gameObjects[3].transform.scale += glm::vec3(sin(time) / 10);
+
+      
     }
 
     vkDeviceWaitIdle(device.device());
@@ -67,12 +88,37 @@ namespace Tutorial
 
   void FirstApp::loadGameObjects()
   {
-    std::shared_ptr<Model> lveModel =
-        Model::createModelFromFile(device, "models/demoman.obj");
+    std::shared_ptr<Model> model =
+        Model::createModelFromFile(device, "models/faker.obj");
     auto gameObj = GameObject::createGameObject();
-    gameObj.model = lveModel;
-    gameObj.transform.translation = {.0f, .0f, 2.5f};
-    gameObj.transform.scale = glm::vec3(3.f);
+    gameObj.model = model;
+    gameObj.transform.translation = {.0f, .5f, 2.5f};
+    gameObj.transform.scale = glm::vec3(3.f,1.5f,3.0f);
+    gameObj.transform.rotation = glm::vec3(0.0f,191.0f,0.0f);
+    gameObjects.push_back(std::move(gameObj));
+
+    model =
+        Model::createModelFromFile(device, "models/sage.obj");
+    gameObj = GameObject::createGameObject();
+    gameObj.model = model;
+    gameObj.transform.translation = {5.0f, .5f, 2.5f};
+    gameObj.transform.scale = glm::vec3(3.f,1.5f,3.0f);
+    gameObjects.push_back(std::move(gameObj));
+
+    model =
+        Model::createModelFromFile(device, "models/demoman.obj");
+    gameObj = GameObject::createGameObject();
+    gameObj.model = model;
+    gameObj.transform.translation = {10.0f, .5f, 2.5f};
+    gameObj.transform.scale = glm::vec3(3.f,1.5f,3.0f);
+    gameObjects.push_back(std::move(gameObj));
+
+    model =
+        Model::createModelFromFile(device, "models/spy.obj");
+    gameObj = GameObject::createGameObject();
+    gameObj.model = model;
+    gameObj.transform.translation = {10.0f, .5f, 2.5f};
+    gameObj.transform.scale = glm::vec3(3.f,1.5f,3.0f);
     gameObjects.push_back(std::move(gameObj));
   }
 
