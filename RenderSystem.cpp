@@ -67,12 +67,11 @@ namespace Tutorial
         pipelineConfig);
   }
 
-  void RenderSystem::renderGameObjects(
-      VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects,const Camera &camera)
+  void RenderSystem::renderGameObjects(FrameInfo &frameinfo, std::vector<GameObject> &gameObjects)
   {
-    lvePipeline->bind(commandBuffer);
+    lvePipeline->bind(frameinfo.commandBuffer);
 
-    auto projectionView = camera.getProjection() * camera.getView();
+    auto projectionView = frameinfo.camera.getProjection() * frameinfo.camera.getView();
 
     for (auto &obj : gameObjects)
     {
@@ -85,14 +84,14 @@ namespace Tutorial
       push.normalMatrix = obj.transform.normalMatrix();
 
       vkCmdPushConstants(
-          commandBuffer,
+          frameinfo.commandBuffer,
           pipelineLayout,
           VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
           0,
           sizeof(SimplePushConstantData),
           &push);
-      obj.model->bind(commandBuffer);
-      obj.model->draw(commandBuffer);
+      obj.model->bind(frameinfo.commandBuffer);
+      obj.model->draw(frameinfo.commandBuffer);
     }
   }
 
