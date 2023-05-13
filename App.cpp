@@ -26,7 +26,13 @@ namespace Tutorial
     glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
   };
 
-  FirstApp::FirstApp() { loadGameObjects(); }
+  FirstApp::FirstApp() { 
+    globalPool = DescriptorPool::Builder(device)
+    .setMaxSets(Swapchain::MAX_FRAMES_IN_FLIGHT)
+    .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,Swapchain::MAX_FRAMES_IN_FLIGHT)
+    .build();
+
+    loadGameObjects(); }
 
   FirstApp::~FirstApp() {}
 
@@ -48,7 +54,19 @@ namespace Tutorial
       uboBuffers[i]->map();
     };
 
-    RenderSystem renderSystem{device, renderer.getSwapChainRenderPass()};
+    auto globalSetLayout = DescriptorSetLayout::Builder(device)
+    .addBinding(0,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,VK_SHADER_STAGE_VERTEX_BIT)
+    .build();
+
+    std::vector<VkDescriptorSet> globalDescriptorSets(Swapchain::MAX_FRAMES_IN_FLIGHT);
+    for(int i = 0; i < globalDescriptorSets.size();i++){
+      auto bufferInfo = uboBuffers[i]->descriptorInfo();
+      DescriptorWriter(*globalSetLayout,*globalPool)
+      .writeBuffer(0,&bufferInfo)
+      .build(globalDescriptorSets[i]);
+    };
+
+    RenderSystem renderSystem{device, renderer.getSwapChainRenderPass(),globalSetLayout->getDescriptorSetLayout()};
     Camera camera{};
     GameObject viewerObject = GameObject::createGameObject();
     // camera.setViewDirection(glm::vec3{0.0f},glm::vec3{0.5f,0.0f,1.0f});
@@ -69,8 +87,8 @@ namespace Tutorial
       cameraController.moveInPlaneXZ(window.getGLFWwindow(), deltaTime, viewerObject);
       camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
-      lightX = sin(time);
-      lightY = cos(time);
+      lightX = sin(time * 2) / 2;
+      lightY = cos(time * 2) / 2;
 
       float aspect = renderer.getAspectRatio();
       // camera.setOrthographicProjection(-aspect,aspect,-1,1,-1,1);
@@ -83,11 +101,14 @@ namespace Tutorial
             frameIndex,
             deltaTime,
             commandBuffer,
-            camera};
+            camera,
+            globalDescriptorSets[frameIndex]};
 
         // update
         GlobalUBO ubo{};
         ubo.projectionView = camera.getProjection() * camera.getView();
+        ubo.lightDirection.x = lightX;
+        ubo.lightDirection.z = lightY;
         uboBuffers[frameIndex]->writeToBuffer(&ubo);
         uboBuffers[frameIndex]->flush();
 

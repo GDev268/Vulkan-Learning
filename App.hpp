@@ -4,6 +4,7 @@
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Window.hpp"
+#include "Descriptor.hpp"
 
 // std
 #include <memory>
@@ -32,6 +33,7 @@ namespace Tutorial
     Device device{window};
     Renderer renderer{window, device};
 
+    std::unique_ptr<DescriptorPool> globalPool{};
     std::vector<GameObject> gameObjects;
   };
 }

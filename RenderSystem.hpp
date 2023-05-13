@@ -13,7 +13,7 @@
 namespace Tutorial {
 class RenderSystem {
  public:
-  RenderSystem(Device &device, VkRenderPass renderPass);
+  RenderSystem(Device &device, VkRenderPass renderPass,VkDescriptorSetLayout descriptorSetLayout);
   ~RenderSystem();
 
   RenderSystem(const RenderSystem &) = delete;
@@ -22,7 +22,7 @@ class RenderSystem {
   void renderGameObjects(FrameInfo &frameinfo, std::vector<GameObject> &gameObjects);
 
  private:
-  void createPipelineLayout();
+  void createPipelineLayout(VkDescriptorSetLayout descriptorSetLayout);
   void createPipeline(VkRenderPass renderPass);
 
   Device &device;
